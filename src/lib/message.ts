@@ -17,6 +17,7 @@ export default class Message {
   public cmd_name: string = "";
   public isCommand = false;
   public isGroub = false;
+  public isStatus = false;
   public args: string[] = [];
 
   constructor(botConfig: BotConfig, sock: any, message: WAMessage) {
@@ -29,6 +30,7 @@ export default class Message {
       this.isGroub = true;
     }
 
+    if (message.status) this.isStatus = true;
     convertText: {
       if (this.text) {
         if (this.isGroub) {
@@ -47,10 +49,6 @@ export default class Message {
         this.args = p;
       }
     }
-
-    if (this.config.AUTO_READ) {
-      this.sock.readMessages([message.key]);
-    }
   }
 
   public getText(): string | null {
@@ -64,19 +62,10 @@ export default class Message {
         return this.message.message?.extendedTextMessage?.text || null;
 
       case "imageMessage":
-        return this.message.message?.imageMessage?.caption || "[Image]";
+        return this.message.message?.imageMessage?.caption || null;
 
       case "videoMessage":
-        return this.message.message?.videoMessage?.caption || "[Video]";
-
-      //   case "documentMessage":
-      //     return "[Document]";
-
-      //   case "audioMessage":
-      //     return "[Audio]";
-
-      //   case "stickerMessage":
-      //     return "[Sticker]";
+        return this.message.message?.videoMessage?.caption || null;
 
       default:
         return null;
@@ -101,6 +90,10 @@ export default class Message {
     if (!sender) return;
     option.quoted = { ...this.message };
     await this.sendTo(sender, content, option);
+  }
+
+  public async markAsRead() {
+    await this.sock.readMessages([this.message.key]);
   }
 
   public getMediaInfo(): null | undefined | AnyMediaMessageContent {

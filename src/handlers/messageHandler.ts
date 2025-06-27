@@ -24,12 +24,15 @@ export class MessageHandler {
       const senderNumber = chat.getJid();
       const senderName = chat.message.pushName || "Unknown";
 
+      if (chat.isStatus) return;
       if (chat.config.hasLimit()) return console.log(`message ignored because limited`);
+      if (chat.config.isBlocked(senderNumber || "")) return;
       if (chat.isGroub && !chat.config.RESPOND_IN_GROUPS) return;
 
       if (!chat.text) return;
-      console.log(`📨 Message from ${senderName} (${senderNumber}): ${chat.text} | ${chat.cmd_name} - ${chat.args}`);
+      // console.log(`📨 Message from ${senderName} (${senderNumber}): ${chat.text} | ${chat.cmd_name} - ${chat.args}`);
 
+      if (chat.config.AUTO_READ) chat.markAsRead();
       if (chat.isCommand) {
         const c = this.commands[chat.cmd_name];
 

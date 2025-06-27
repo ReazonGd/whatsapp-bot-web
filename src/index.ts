@@ -5,13 +5,11 @@ import { Boom } from "@hapi/boom";
 import qrcode from "qrcode-terminal";
 import { MessageHandler } from "./handlers/messageHandler";
 import Message from "./lib/message";
-import * as cron from "node-cron";
 
 class WhatsAppBot {
   private config: BotConfig;
   private sock: any;
   private messageHandler: MessageHandler;
-  private sceduled = false;
   constructor() {
     this.config = new BotConfig();
     this.messageHandler = new MessageHandler();
@@ -86,21 +84,21 @@ class WhatsAppBot {
     // Handle incoming messages
     this.sock.ev.on("messages.upsert", async (m: any) => {
       const message = m.messages[0];
-      console.log(message);
+      // console.log(message);
       if (!message.key.fromMe && m.type === "notify") {
         await this.messageHandler.handleMessage(new Message(this.config, this.sock, message));
       }
     });
 
     // Handle message updates (like read receipts, message deletions, etc.)
-    this.sock.ev.on("messages.update", (messageUpdate: WAMessageUpdate[]) => {
-      for (const { key, update } of messageUpdate) {
-        if (update.pollUpdates) {
-          // Handle poll updates if needed
-          console.log("Poll update:", update.pollUpdates);
-        }
-      }
-    });
+    // this.sock.ev.on("messages.update", (messageUpdate: WAMessageUpdate[]) => {
+    //   for (const { key, update } of messageUpdate) {
+    //     if (update.pollUpdates) {
+    //       // Handle poll updates if needed
+    //       console.log("Poll update:", update.pollUpdates);
+    //     }
+    //   }
+    // });
 
     // Handle group updates
     this.sock.ev.on("groups.update", (updates: any[]) => {
@@ -110,9 +108,9 @@ class WhatsAppBot {
     });
 
     // Handle presence updates (online/offline status)
-    this.sock.ev.on("presence.update", ({ id, presences }: any) => {
-      console.log("Presence update for", id, ":", presences);
-    });
+    // this.sock.ev.on("presence.update", ({ id, presences }: any) => {
+    //   console.log("Presence update for", id, ":", presences);
+    // });
   }
 }
 
