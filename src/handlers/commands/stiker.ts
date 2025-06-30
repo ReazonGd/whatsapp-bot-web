@@ -21,12 +21,17 @@ module.exports = {
       const sticker_name = chat.args.join(" ") || "Stiker by " + chat.config.NAME;
 
       const image = new Image();
-      image.load(buffer);
-      image.exif = Buffer.concat([Buffer.from([0x00, 0x00, 0x16, 0x00]), Buffer.from(JSON.stringify({ "sticker-pack-name": sticker_name }), "utf-8")]);
+      const data = JSON.stringify({ "sticker-pack-name": sticker_name });
+      await image.load(buffer);
 
-      chat.send({ sticker: await image.save() });
+      let exif = Buffer.concat([Buffer.from([0x49, 0x49, 0x2a, 0x00, 0x08, 0x00, 0x00, 0x00, 0x01, 0x00, 0x41, 0x57, 0x07, 0x00, 0x00, 0x00, 0x00, 0x00, 0x16, 0x00, 0x00, 0x00]), Buffer.from(data, "utf-8")]);
+      exif.writeUintLE(new TextEncoder().encode(data).length, 14, 4);
+      image.exif = exif;
+
+      chat.send({ sticker: await image.save(null) });
     } catch (error) {
       await chat.send({ text: "Terjadi kesalahan saat memproses" });
+      console.log(error);
     }
   },
 } as CommandBot;
