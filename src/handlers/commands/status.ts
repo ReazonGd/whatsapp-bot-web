@@ -1,4 +1,4 @@
-import os from "os";
+import os, { totalmem } from "os";
 import { CommandBot } from "../command.interface";
 
 function getTimeFormat(from: number) {
@@ -46,7 +46,7 @@ module.exports = {
 *Aktif selama:* 
 > ${getTimeFormat(process.uptime())}
 *Memori yang digunakan:* 
-> *${((totalCpuTime / botMemoryUsage) * 100).toFixed(2)}%* (${(botMemoryUsage / 1024 / 1024).toFixed(2)} MB)
+> *${((botMemoryUsage / totalMem) * 100).toFixed(2)}%* (${(botMemoryUsage / 1024 / 1024).toFixed(2)} MB)
       
 *Server Stat*
 *Waktu:*

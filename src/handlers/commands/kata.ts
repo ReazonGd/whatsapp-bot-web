@@ -65,6 +65,7 @@ async function fetchKBBIData(word: string) {
   }
 }
 
+const MAX_ATTEMP = 6;
 module.exports = {
   name: "toka",
   description: "Tebak huruf hari ini. penggunaan: \n[PREFIX]toka [text]",
@@ -95,7 +96,11 @@ module.exports = {
       chat.config.ARGS.toka_expired = toka_expired;
     }
 
-    if (toka_users_attemp[userJid] >= 5) return await chat.send({ text: "*Toka* _Today kata_ \nWah! *Kesempatan kamu sudah habis*. kamu sudah tidak dapat menebak. besok lagi ya!" });
+    if (toka_users_attemp[userJid] >= MAX_ATTEMP) {
+      await chat.send({ text: `*Toka* _Today kata_ \nWah! *Kesempatan kamu sudah habis*. Kata hari ini adalah: ${today_kata}` });
+      await chat.send({ text: `${toka_description}` });
+      return;
+    }
     if (chat.args.length < 1) return await chat.reply({ text: `*Toka*.\nToday kata. tebak 5 huruf kata hari ini. \n\nCara pakai:\n${chat.config.PREFIX}toka [text]` });
     if (chat.args[0].length != 5) return await chat.reply({ text: `1 kata harus 5 huruf!` });
     if (!kata.includes(chat.args[0])) return await chat.reply({ text: `kata ${chat.args[0]} tidak ditemukan.` });
@@ -114,7 +119,7 @@ module.exports = {
 
     const correct = chat.args[0] === today_kata;
 
-    if (correct) toka_users_attemp[userJid] = 5;
+    if (correct) toka_users_attemp[userJid] = MAX_ATTEMP;
     else toka_users_attemp[userJid] += 1;
     chat.config.ARGS.toka_users_attemp = toka_users_attemp;
 
