@@ -127,7 +127,7 @@ module.exports = {
       text: `*Toka* _Today kata_
 \`\`\`
 ${user_kata_arr.join("\n")}\`\`\`${correct ? `\n\nBenar! Kata hari ini adalah: *${today_kata}*!` : ""}
-> *Kesempatan:* ${5 - toka_users_attemp[userJid]}/5`,
+> *Kesempatan:* ${MAX_ATTEMP - toka_users_attemp[userJid]}/${MAX_ATTEMP}`,
     });
     if (correct) await chat.send({ text: `${toka_description}` });
   },

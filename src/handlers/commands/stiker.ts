@@ -18,10 +18,16 @@ module.exports = {
       const { buffer } = await convertBufferToWebP(buffer_from, { fit: "contain", height: 700, width: 700 });
       if (!buffer) return await chat.send({ text: "Terjadi kesalahan saat mengkonversi gambar" });
 
-      const sticker_name = chat.args.join(" ") || "Stiker by " + chat.config.NAME;
+      const sticker_name = chat.args.join(" ") || "Sticker";
+      const link_wa = `https://wa.me/${chat.config.PHONE_NUMBER}`;
 
       const image = new Image();
-      const data = JSON.stringify({ "sticker-pack-name": sticker_name });
+      const data = JSON.stringify({
+        "sticker-pack-name": sticker_name,
+        "sticker-pack-publisher": chat.message.pushName || "Unknown",
+        "sticker-url": link_wa,
+        "dev-message": "gabut bet gua",
+      });
       await image.load(buffer);
 
       let exif = Buffer.concat([Buffer.from([0x49, 0x49, 0x2a, 0x00, 0x08, 0x00, 0x00, 0x00, 0x01, 0x00, 0x41, 0x57, 0x07, 0x00, 0x00, 0x00, 0x00, 0x00, 0x16, 0x00, 0x00, 0x00]), Buffer.from(data, "utf-8")]);
